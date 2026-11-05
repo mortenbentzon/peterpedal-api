@@ -13,35 +13,53 @@ public class SparePartsController : ControllerBase
 
     public SparePartsController(PeterPedalDbContext db) => _db = db;
 
-    [HttpGet]
-    public async Task<List<SparePart>> GetAll() =>
-        await _db.SpareParts.OrderBy(p => p.Id).ToListAsync();
-
     [HttpGet("{id}")]
     public async Task<ActionResult<SparePart>> GetById(int id)
     {
-        // TODO: Return the spare part with the given id, or 404 Not Found.
-        throw new NotImplementedException();
+        var part = await _db.SpareParts.FindAsync(id);
+        if (part == null) 
+        {
+            return NotFound();
+        }
+        return part;
     }
 
     [HttpPost]
     public async Task<ActionResult<SparePart>> Create(SparePart part)
     {
-        // TODO: Save the new spare part and return 201 Created.
-        throw new NotImplementedException();
+        part.Id = 0; // Databasen genererer selv det nye ID
+        _db.SpareParts.Add(part);
+        await _db.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = part.Id }, part);
     }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<SparePart>> Update(int id, SparePart input)
     {
-        // TODO: Update name and price and return the spare part, or 404 Not Found.
-        throw new NotImplementedException();
+        var part = await _db.SpareParts.FindAsync(id);
+        if (part == null) 
+        {
+            return NotFound();
+        }
+    
+        part.Name = input.Name;
+        part.Price = input.Price;
+        await _db.SaveChangesAsync();
+    
+        return part;
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        // TODO: Delete the spare part and return 204 No Content, or 404 Not Found.
-        throw new NotImplementedException();
+        var part = await _db.SpareParts.FindAsync(id);
+        if (part == null) 
+        {
+            return NotFound();
+        }
+    
+        _db.SpareParts.Remove(part);
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 }

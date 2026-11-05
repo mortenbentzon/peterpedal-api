@@ -13,6 +13,11 @@ public class SparePartsController : ControllerBase
 
     public SparePartsController(PeterPedalDbContext db) => _db = db;
 
+    // Tilføjet: Henter alle reservedele
+    [HttpGet]
+    public async Task<List<SparePart>> GetAll() =>
+        await _db.SpareParts.OrderBy(p => p.Id).ToListAsync();
+
     [HttpGet("{id}")]
     public async Task<ActionResult<SparePart>> GetById(int id)
     {
